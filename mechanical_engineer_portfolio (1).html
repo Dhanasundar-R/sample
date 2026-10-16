@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanical Engineering Portfolio & Secured CMS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            accent: '#f97316', // Engineering Safety Amber/Orange
+                            accentHover: '#ea580c',
+                            darkBg: '#0f172a',
+                            panelBg: '#1e293b',
+                            borderDark: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tech: ['Chakra Petch', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Grid Background */
+        .bg-grid-pattern {
+            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        }
+
+        /* Editing Mode Visual Indicators */
+        body.edit-mode .editable {
+            outline: 2px dashed #f97316 !important;
+            outline-offset: 3px;
+            border-radius: 4px;
+            background-color: rgba(249, 115, 22, 0.05);
+            cursor: text;
+            transition: all 0.2s ease;
+        }
+
+        body.edit-mode .editable:hover {
+            background-color: rgba(249, 115, 22, 0.15);
+            outline-color: #38bdf8 !important;
+        }
+
+        body.edit-mode .edit-only {
+            display: inline-flex !important;
+        }
+
+        .edit-only {
+            display: none !important;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Toast Notifications */
+        #toast {
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Modal Smooth Scroll */
+        .modal-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-brand-darkBg text-slate-200 font-sans antialiased bg-grid-pattern selection:bg-brand-accent selection:text-white">
+
+    <!-- Toast Notification Widget -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-slate-800 border border-brand-accent/40 text-white px-5 py-3.5 rounded-xl shadow-2xl">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-brand-accent text-xl"></i>
+        <div>
+            <h4 id="toast-title" class="font-bold text-sm font-tech">Notification</h4>
+            <p id="toast-msg" class="text-xs text-slate-300">Action completed successfully.</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-800 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo / Brand Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-accent to-brand-500 flex items-center justify-center shadow-lg shadow-brand-accent/20">
+                    <i class="fa-solid fa-gear text-slate-900 text-xl animate-spin-slow"></i>
+                </div>
+                <div>
+                    <span class="font-tech font-bold text-xl tracking-wide text-white block leading-none">
+                        <span class="editable" id="header-name">ALEXANDER VANCE</span>
+                    </span>
+                    <span class="text-xs text-brand-accent font-mono tracking-widest uppercase editable" id="header-title">M.E. | CAD & FEA Specialist</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                <a href="#about" class="text-slate-300 hover:text-brand-accent transition-colors">About</a>
+                <a href="#skills" class="text-slate-300 hover:text-brand-accent transition-colors">Skills</a>
+                <a href="#projects" class="text-slate-300 hover:text-brand-accent transition-colors">Projects</a>
+                <a href="#calculator" class="text-slate-300 hover:text-brand-accent transition-colors">FEA Calculator</a>
+                <a href="#experience" class="text-slate-300 hover:text-brand-accent transition-colors">Experience</a>
+                <a href="#contact" class="text-slate-300 hover:text-brand-accent transition-colors">Contact</a>
+            </nav>
+
+            <!-- Admin & CMS Toolbar Area -->
+            <div class="flex items-center gap-3">
+                
+                <!-- Unlocked Admin Controls (Visible ONLY after authenticated) -->
+                <div id="admin-controls" class="hidden items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-brand-accent/40 shadow-lg">
+                    
+                    <!-- Toggle Edit Mode Checkbox -->
+                    <label class="flex items-center cursor-pointer px-2 py-1 hover:bg-slate-800 rounded-lg transition">
+                        <input type="checkbox" id="edit-mode-toggle" class="sr-only peer" onchange="toggleEditMode(this.checked)">
+                        <div class="w-8 h-4 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[8px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand-accent"></div>
+                        <span class="text-xs font-mono ml-2 text-brand-accent font-bold">Edit Mode</span>
+                    </label>
+
+                    <!-- Save Changes Button -->
+                    <button onclick="saveAllChanges()" class="edit-only bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save</span>
+                    </button>
+
+                    <!-- Export Backup JSON -->
+                    <button onclick="exportJSON()" class="edit-only bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-2 py-1.5 rounded-lg border border-slate-700 transition" title="Export Backup JSON">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+
+                    <!-- Import JSON (Hidden File Input Trigger) -->
+                    <input type="file" id="import-json-file" class="hidden" accept=".json" onchange="importJSON(event)">
+                    <button onclick="document.getElementById('import-json-file').click()" class="edit-only bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-2 py-1.5 rounded-lg border border-slate-700 transition" title="Import JSON Data">
+                        <i class="fa-solid fa-upload"></i>
+                    </button>
+
+                    <!-- Lock / Exit Admin Mode Button -->
+                    <button onclick="lockAdminSession()" class="bg-rose-600/80 hover:bg-rose-600 text-white text-xs px-2.5 py-1.5 rounded-lg transition flex items-center gap-1" title="Lock & Hide Admin Mode">
+                        <i class="fa-solid fa-lock"></i>
+                        <span class="hidden sm:inline">Lock</span>
+                    </button>
+                </div>
+
+                <!-- Admin Login Button (Visible when locked) -->
+                <button id="admin-login-btn" onclick="openAuthModal()" class="text-slate-400 hover:text-brand-accent p-2 text-sm transition flex items-center gap-1.5 bg-slate-900/60 rounded-lg border border-slate-800" title="Admin Auth Access">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span class="text-xs font-mono hidden sm:inline">Owner Login</span>
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white p-2">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-slate-900/95 px-4 pt-3 pb-6 space-y-3">
+            <a href="#about" class="block text-slate-300 hover:text-brand-accent font-medium py-1">About</a>
+            <a href="#skills" class="block text-slate-300 hover:text-brand-accent font-medium py-1">Skills</a>
+            <a href="#projects" class="block text-slate-300 hover:text-brand-accent font-medium py-1">Projects</a>
+            <a href="#calculator" class="block text-slate-300 hover:text-brand-accent font-medium py-1">FEA Calculator</a>
+            <a href="#experience" class="block text-slate-300 hover:text-brand-accent font-medium py-1">Experience</a>
+            <a href="#contact" class="block text-slate-300 hover:text-brand-accent font-medium py-1">Contact</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 py-12">
+
+        <!-- Hero Section -->
+        <section class="grid md:grid-cols-12 gap-12 items-center min-h-[80vh] pt-4">
+            
+            <div class="md:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-500 text-xs font-mono">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span class="editable" id="hero-badge">Available for Engineering Projects & R&D Roles</span>
+                </div>
+
+                <h1 class="font-tech text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                    <span class="editable block" id="hero-title-1">Designing Precision Mechanical Systems</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-sky-400 editable block" id="hero-title-2">& Advanced Hardware</span>
+                </h1>
+
+                <p class="text-slate-400 text-base sm:text-lg leading-relaxed editable max-w-2xl" id="hero-description">
+                    Mechanical Engineer specializing in CAD surface modeling, Finite Element Analysis (FEA), thermal dynamics, and rapid prototyping. Bridging conceptual design with precision manufacturing realities.
+                </p>
+
+                <!-- Call To Actions -->
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="#projects" class="px-6 py-3.5 rounded-xl bg-brand-accent hover:bg-brand-accentHover text-white font-semibold shadow-lg shadow-brand-accent/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-cubes"></i>
+                        <span>Explore Projects</span>
+                    </a>
+                    
+                    <a href="#contact" class="px-6 py-3.5 rounded-xl glass-card hover:bg-slate-800 text-slate-200 font-semibold border border-slate-700 transition flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Contact Me</span>
+                    </a>
+
+                    <a href="#" onclick="downloadResume(event)" class="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-rose-400"></i>
+                        <span class="editable" id="resume-btn-text">Download Resume</span>
+                    </a>
+                </div>
+
+                <!-- Quick Stats Badge Bar -->
+                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-slate-800/80">
+                    <div>
+                        <div class="font-tech text-2xl sm:text-3xl font-bold text-white editable" id="stat-1-val">6+ Years</div>
+                        <div class="text-xs text-slate-400 editable" id="stat-1-lbl">R&D & Engineering Exp</div>
+                    </div>
+                    <div>
+                        <div class="font-tech text-2xl sm:text-3xl font-bold text-white editable" id="stat-2-val">35+ CAD</div>
+                        <div class="text-xs text-slate-400 editable" id="stat-2-lbl">Assemblies Delivered</div>
+                    </div>
+                    <div>
+                        <div class="font-tech text-2xl sm:text-3xl font-bold text-white editable" id="stat-3-val">12 Patents</div>
+                        <div class="text-xs text-slate-400 editable" id="stat-3-lbl">And Innovations Filed</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CAD Model Graphic Container -->
+            <div class="md:col-span-5 relative">
+                <div class="relative w-full aspect-square rounded-2xl glass-card overflow-hidden border border-slate-700/80 p-4 group">
+                    
+                    <!-- Decorative CAD Viewport Overlay -->
+                    <div class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded border border-slate-700 font-mono text-xs text-brand-accent">
+                        <i class="fa-solid fa-crosshairs animate-pulse"></i>
+                        <span>CAD_VIEWPORT_ISO_3D</span>
+                    </div>
+
+                    <div class="absolute bottom-4 right-4 z-10 font-mono text-[10px] text-slate-500 bg-slate-900/90 px-2 py-1 rounded">
+                        SOLIDS / MESH: 48,200 NODES
+                    </div>
+
+                    <!-- Graphic Preview Placeholder -->
+                    <div class="w-full h-full rounded-lg bg-slate-900 flex items-center justify-center relative overflow-hidden group-hover:border-brand-accent/50 transition">
+                        <!-- Abstract Mechanical Grid Diagram Placeholder -->
+                        <svg class="w-full h-full text-slate-800 p-8" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" />
+                            <circle cx="100" cy="100" r="50" stroke="#0284c7" stroke-width="3" />
+                            <path d="M100 20 V180 M20 100 H180" stroke="currentColor" stroke-width="1.5"/>
+                            <polygon points="100,60 135,120 65,120" fill="none" stroke="#f97316" stroke-width="3" />
+                            <circle cx="100" cy="100" r="12" fill="#0284c7" />
+                        </svg>
+                        
+                        <!-- Floating Spec Badges -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex flex-col justify-end p-6">
+                            <div class="bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-slate-700 space-y-1">
+                                <div class="text-xs font-mono text-slate-300 flex justify-between">
+                                    <span>FEA Stress Analysis:</span>
+                                    <span class="text-emerald-400 font-bold">Von Mises &lt; 180 MPa</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-emerald-500 h-full w-[65%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- About & Core Expertise Section -->
+        <section id="about" class="space-y-8 scroll-mt-24">
+            <div class="border-l-4 border-brand-accent pl-4">
+                <h2 class="font-tech text-3xl font-bold text-white uppercase tracking-wider">Engineering Focus & Expertise</h2>
+                <p class="text-slate-400 text-sm">Core Mechanical Engineering Competencies & Industry Knowledge</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Competency Card 1 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-drafting-compass"></i>
+                    </div>
+                    <h3 class="font-tech text-xl font-bold text-white editable" id="about-card1-title">CAD Modeling & GD&T</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed editable" id="about-card1-desc">
+                        Advanced 3D parametric mechanical design using SolidWorks, CATIA, and Fusion 360. Expertise in ASME Y14.5 Geometric Dimensioning and Tolerancing (GD&T) for seamless manufacturing.
+                    </p>
+                </div>
+
+                <!-- Competency Card 2 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-brand-accent/10 text-brand-accent flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3 class="font-tech text-xl font-bold text-white editable" id="about-card2-title">FEA & Computational Analysis</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed editable" id="about-card2-desc">
+                        Static, dynamic, fatigue, and thermal stress simulation in ANSYS & ABAQUS. Topology optimization to minimize component weight while preserving structural integrity.
+                    </p>
+                </div>
+
+                <!-- Competency Card 3 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3 class="font-tech text-xl font-bold text-white editable" id="about-card3-title">Robotics & Mechatronics</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed editable" id="about-card3-desc">
+                        Integration of actuators, sensors, stepper motors, and microcontroller logic (Arduino, Raspberry Pi, Python) for automated mechanical systems and closed-loop testing rigs.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Skills Matrix -->
+        <section id="skills" class="space-y-8 scroll-mt-24">
+            <div class="flex flex-wrap items-end justify-between gap-4 border-l-4 border-brand-500 pl-4">
+                <div>
+                    <h2 class="font-tech text-3xl font-bold text-white uppercase tracking-wider">Technical Skills Matrix</h2>
+                    <p class="text-slate-400 text-sm">Engineering Toolsets & Proficiency Levels</p>
+                </div>
+                <!-- Dynamic Skill Group Addition Button -->
+                <button onclick="addSkillCategory()" class="edit-only bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold px-3 py-2 rounded-lg transition items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> Add Skill Category
+                </button>
+            </div>
+
+            <div id="skills-container" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Skill Category 1 -->
+                <div class="skill-category-card glass-card p-5 rounded-xl border border-slate-800 space-y-4 relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 text-rose-500 hover:text-rose-400 text-xs p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <h3 class="font-tech font-bold text-brand-accent text-lg editable">3D CAD & Modeling</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">SolidWorks (CSWE)</span>
+                                <span class="font-mono text-brand-accent editable">95%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-brand-accent h-full rounded-full" style="width: 95%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">Autodesk Fusion 360</span>
+                                <span class="font-mono text-brand-accent editable">90%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-brand-accent h-full rounded-full" style="width: 90%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">CATIA V5 / V6</span>
+                                <span class="font-mono text-brand-accent editable">80%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-brand-accent h-full rounded-full" style="width: 80%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Category 2 -->
+                <div class="skill-category-card glass-card p-5 rounded-xl border border-slate-800 space-y-4 relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 text-rose-500 hover:text-rose-400 text-xs p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <h3 class="font-tech font-bold text-sky-400 text-lg editable">FEA & Thermal Analysis</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">ANSYS Mechanical / Fluent</span>
+                                <span class="font-mono text-sky-400 editable">88%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-sky-400 h-full rounded-full" style="width: 88%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">ABAQUS Explicit</span>
+                                <span class="font-mono text-sky-400 editable">75%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-sky-400 h-full rounded-full" style="width: 75%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">COMSOL Multiphysics</span>
+                                <span class="font-mono text-sky-400 editable">70%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-sky-400 h-full rounded-full" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Category 3 -->
+                <div class="skill-category-card glass-card p-5 rounded-xl border border-slate-800 space-y-4 relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 text-rose-500 hover:text-rose-400 text-xs p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <h3 class="font-tech font-bold text-emerald-400 text-lg editable">Prototyping & Mfg</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">3D Printing (FDM/SLA/SLS)</span>
+                                <span class="font-mono text-emerald-400 editable">92%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-400 h-full rounded-full" style="width: 92%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">CNC Machining & G-Code</span>
+                                <span class="font-mono text-emerald-400 editable">82%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-400 h-full rounded-full" style="width: 82%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">Sheet Metal Design</span>
+                                <span class="font-mono text-emerald-400 editable">85%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-400 h-full rounded-full" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Category 4 -->
+                <div class="skill-category-card glass-card p-5 rounded-xl border border-slate-800 space-y-4 relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 text-rose-500 hover:text-rose-400 text-xs p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <h3 class="font-tech font-bold text-purple-400 text-lg editable">Programming & Testing</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">MATLAB / Simulink</span>
+                                <span class="font-mono text-purple-400 editable">85%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-purple-400 h-full rounded-full" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">Python (NumPy/SciPy)</span>
+                                <span class="font-mono text-purple-400 editable">78%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-purple-400 h-full rounded-full" style="width: 78%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="editable text-slate-300">LabVIEW Data Acquisition</span>
+                                <span class="font-mono text-purple-400 editable">72%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-purple-400 h-full rounded-full" style="width: 72%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Engineering Projects -->
+        <section id="projects" class="space-y-8 scroll-mt-24">
+            <div class="flex flex-wrap items-end justify-between gap-4 border-l-4 border-brand-accent pl-4">
+                <div>
+                    <h2 class="font-tech text-3xl font-bold text-white uppercase tracking-wider">Engineering Case Studies & Projects</h2>
+                    <p class="text-slate-400 text-sm">Detailed Mechanical Engineering Solutions, FEA Studies & Hardware Prototypes</p>
+                </div>
+                <!-- Dynamic Project Addition Button -->
+                <button onclick="addProjectCard()" class="edit-only bg-brand-accent hover:bg-brand-accentHover text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition items-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-plus"></i> Add New Project
+                </button>
+            </div>
+
+            <!-- Project Cards Grid -->
+            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Project Card 1 -->
+                <div class="project-card glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 z-20 bg-rose-600/90 text-white hover:bg-rose-600 text-xs px-2 py-1 rounded">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                    <div>
+                        <!-- Project Visual Banner -->
+                        <div class="h-48 bg-slate-900 border-b border-slate-800 relative flex items-center justify-center overflow-hidden">
+                            <i class="fa-solid fa-car-battery text-5xl text-slate-700 group-hover:scale-110 transition duration-300"></i>
+                            <div class="absolute top-3 left-3 flex gap-1.5">
+                                <span class="bg-brand-500/20 text-brand-400 border border-brand-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable">Thermal Management</span>
+                                <span class="bg-slate-800 text-slate-300 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable">CFD</span>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="p-6 space-y-4">
+                            <h3 class="font-tech text-xl font-bold text-white editable">EV Battery Pack Liquid Cold Plate Design</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed editable">
+                                Engineered an aluminum micro-channel cold plate cooling system for high-density EV battery modules. Optimized thermal distribution and reduced peak temperature.
+                            </p>
+
+                            <!-- Key Results Pill Badges -->
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono py-2 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                <div>
+                                    <span class="text-slate-500 block">Peak Temp Cut:</span>
+                                    <span class="text-emerald-400 font-bold editable">-14.2°C</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 block">Pressure Drop:</span>
+                                    <span class="text-brand-accent font-bold editable">&lt; 22 kPa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 pt-0">
+                        <button onclick="openProjectModal('EV Battery Pack Thermal System', 'Detailed CFD fluid dynamics analysis was conducted using ANSYS Fluent to analyze coolant flow through micro-channels. Conjugate Heat Transfer (CHT) modeling validated uniform surface temperatures below 45°C across battery cells during 3C fast-charging conditions.', 'Material: Aluminum 6061-T6 | Flow Rate: 8 L/min | Max Thermal Flux: 1200 W/m²')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-layer-group"></i> View CAD & Spec Specs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="project-card glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 z-20 bg-rose-600/90 text-white hover:bg-rose-600 text-xs px-2 py-1 rounded">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                    <div>
+                        <!-- Project Visual Banner -->
+                        <div class="h-48 bg-slate-900 border-b border-slate-800 relative flex items-center justify-center overflow-hidden">
+                            <i class="fa-solid fa-robot text-5xl text-slate-700 group-hover:scale-110 transition duration-300"></i>
+                            <div class="absolute top-3 left-3 flex gap-1.5">
+                                <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable">Robotics</span>
+                                <span class="bg-slate-800 text-slate-300 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable">FEA</span>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="p-6 space-y-4">
+                            <h3 class="font-tech text-xl font-bold text-white editable">Lightweight 6-DOF Robotic Arm Linkage</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed editable">
+                                Redesigned industrial robotic manipulator arm using topology optimization and carbon fiber-reinforced composite inserts for high-speed assembly.
+                            </p>
+
+                            <!-- Key Results Pill Badges -->
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono py-2 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                <div>
+                                    <span class="text-slate-500 block">Mass Reduction:</span>
+                                    <span class="text-emerald-400 font-bold editable font-mono">31% Lighter</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 block">Payload Cap:</span>
+                                    <span class="text-brand-accent font-bold editable font-mono">12.5 kg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 pt-0">
+                        <button onclick="openProjectModal('6-DOF Robotic Arm Structural Optimization', 'Topology optimization was executed in SolidWorks Simulation to strip non-critical mass while maintaining a safety factor of N=2.5 under maximum torque dynamic acceleration loading.', 'Material: Carbon Fiber Composite + Al 7075-T6 | Dynamic Load Capacity: 150 N | Deflection: < 0.12 mm')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-layer-group"></i> View CAD & Spec Specs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="project-card glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between relative group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 z-20 bg-rose-600/90 text-white hover:bg-rose-600 text-xs px-2 py-1 rounded">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                    <div>
+                        <!-- Project Visual Banner -->
+                        <div class="h-48 bg-slate-900 border-b border-slate-800 relative flex items-center justify-center overflow-hidden">
+                            <i class="fa-solid fa-gears text-5xl text-slate-700 group-hover:scale-110 transition duration-300"></i>
+                            <div class="absolute top-3 left-3 flex gap-1.5">
+                                <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable">Transmission</span>
+                                <span class="bg-slate-800 text-slate-300 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable">Prototype</span>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="p-6 space-y-4">
+                            <h3 class="font-tech text-xl font-bold text-white editable">High-Torque Planetary Gearbox Assembly</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed editable">
+                                Compact, high-efficiency 5:1 reduction gear drive for electro-mechanical actuators. Engineered gear profile modifications to minimize backlash.
+                            </p>
+
+                            <!-- Key Results Pill Badges -->
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono py-2 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                <div>
+                                    <span class="text-slate-500 block">Efficiency:</span>
+                                    <span class="text-emerald-400 font-bold editable">96.8%</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 block">Backlash:</span>
+                                    <span class="text-brand-accent font-bold editable">&lt; 3 arcmin</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 pt-0">
+                        <button onclick="openProjectModal('High-Torque Planetary Gearbox Assembly', 'Designed specialized spur gear geometry with AGMA Quality 11 standards. Performed tooth fatigue life simulation and backlash measurement under real bench-test dynamometer loads.', 'Material: Case-Hardened Steel 8620 | Torque Output: 240 Nm | Operating Temp Range: -20°C to +85°C')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-layer-group"></i> View CAD & Spec Specs
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Interactive Mechanical Calculator Widget -->
+        <section id="calculator" class="glass-card rounded-2xl border border-slate-800 p-6 sm:p-8 space-y-6">
+            <div class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2 text-brand-accent text-xs font-mono uppercase">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>Interactive CAD & Mechanical Calculator Tool</span>
+                    </div>
+                    <h2 class="font-tech text-2xl font-bold text-white">Cantilever Beam Stress & Deflection Estimator</h2>
+                </div>
+                <span class="bg-slate-800 text-slate-400 text-xs font-mono px-3 py-1 rounded-full border border-slate-700">Euler-Bernoulli Beam Theory</span>
+            </div>
+
+            <div class="grid md:grid-cols-12 gap-8 items-center">
+                
+                <!-- Calculator Controls Column -->
+                <div class="md:col-span-5 space-y-4">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1">Point Load Force (F): <span id="calc-force-val" class="text-brand-accent font-bold">1000 N</span></label>
+                        <input type="range" id="calc-force" min="100" max="10000" step="100" value="1000" oninput="calculateBeam()" class="w-full accent-brand-accent bg-slate-800 rounded-lg h-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1">Beam Length (L): <span id="calc-length-val" class="text-brand-accent font-bold">1.5 m</span></label>
+                        <input type="range" id="calc-length" min="0.5" max="4" step="0.1" value="1.5" oninput="calculateBeam()" class="w-full accent-brand-accent bg-slate-800 rounded-lg h-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1">Material (Young's Modulus E):</label>
+                        <select id="calc-material" onchange="calculateBeam()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-accent">
+                            <option value="69">Aluminum 6061-T6 (E = 69 GPa)</option>
+                            <option value="200" selected>Structural Steel (E = 200 GPa)</option>
+                            <option value="110">Titanium Grade 5 (E = 110 GPa)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-300 mb-1">Beam Width (b):</label>
+                            <input type="number" id="calc-width" value="50" min="10" max="200" oninput="calculateBeam()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono text-slate-200">
+                            <span class="text-[10px] text-slate-500">mm</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-slate-300 mb-1">Beam Height (h):</label>
+                            <input type="number" id="calc-height" value="100" min="10" max="300" oninput="calculateBeam()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono text-slate-200">
+                            <span class="text-[10px] text-slate-500">mm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Results Visual Display Column -->
+                <div class="md:col-span-7 bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-6">
+                    
+                    <!-- Beam Graphic Simulation Visualizer -->
+                    <div class="relative h-28 bg-slate-900 rounded-lg border border-slate-800 overflow-hidden flex items-center px-4">
+                        <!-- Wall Support -->
+                        <div class="w-4 h-full bg-slate-700 border-r-2 border-slate-500 flex flex-col justify-between py-1">
+                            <div class="w-full h-1 bg-slate-500"></div>
+                            <div class="w-full h-1 bg-slate-500"></div>
+                            <div class="w-full h-1 bg-slate-500"></div>
+                        </div>
+
+                        <!-- Deflecting Beam Geometry (Dynamic SVG) -->
+                        <div class="flex-1 relative h-full flex items-center">
+                            <svg class="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+                                <path id="svg-beam-path" d="M 0,50 Q 150,50 300,50" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round" />
+                            </svg>
+                            <!-- Downward Arrow Force Marker -->
+                            <div id="calc-force-arrow" class="absolute right-0 top-2 text-brand-accent transition-all">
+                                <i class="fa-solid fa-arrow-down text-xl animate-bounce"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Computed Analytical Metrics Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="text-[10px] font-mono text-slate-400 block uppercase">Max Bending Stress (σ)</span>
+                            <span id="res-stress" class="font-tech text-xl font-bold text-brand-accent">-- MPa</span>
+                        </div>
+
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="text-[10px] font-mono text-slate-400 block uppercase">Max Deflection (δ)</span>
+                            <span id="res-deflection" class="font-tech text-xl font-bold text-sky-400">-- mm</span>
+                        </div>
+
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 col-span-2 sm:col-span-1">
+                            <span class="text-[10px] font-mono text-slate-400 block uppercase">Moment of Inertia (I)</span>
+                            <span id="res-inertia" class="font-tech text-xl font-bold text-emerald-400">-- cm⁴</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Experience Timeline -->
+        <section id="experience" class="space-y-8 scroll-mt-24">
+            <div class="flex flex-wrap items-end justify-between gap-4 border-l-4 border-brand-accent pl-4">
+                <div>
+                    <h2 class="font-tech text-3xl font-bold text-white uppercase tracking-wider">Work History & Credentials</h2>
+                    <p class="text-slate-400 text-sm">Professional Mechanical Engineering Career & Academic Track Record</p>
+                </div>
+                <!-- Add Experience Entry Button -->
+                <button onclick="addExperienceCard()" class="edit-only bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> Add Experience Item
+                </button>
+            </div>
+
+            <!-- Vertical Timeline -->
+            <div id="timeline-container" class="relative border-l-2 border-slate-800 ml-4 space-y-8">
+
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item relative pl-8 group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-0 right-0 bg-rose-600/80 text-white text-xs px-2 py-0.5 rounded">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <!-- Timeline Dot -->
+                    <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-brand-accent border-4 border-slate-950"></div>
+                    
+                    <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="flex flex-wrap justify-between items-start gap-2">
+                            <div>
+                                <h3 class="font-tech text-xl font-bold text-white editable">Senior Mechanical Design Engineer</h3>
+                                <p class="text-brand-accent text-sm font-medium editable">Apex Aerospace & Defense Solutions</p>
+                            </div>
+                            <span class="bg-slate-800 text-slate-300 text-xs font-mono px-3 py-1 rounded-full editable">2022 - Present</span>
+                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed editable">
+                            Lead mechanical engineer for structural flight components. Spearheading GD&T compliance, structural static/fatigue FEA modeling, dynamic shock simulation, and DFMA implementation for precision machined components.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item relative pl-8 group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-0 right-0 bg-rose-600/80 text-white text-xs px-2 py-0.5 rounded">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <!-- Timeline Dot -->
+                    <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-brand-500 border-4 border-slate-950"></div>
+                    
+                    <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="flex flex-wrap justify-between items-start gap-2">
+                            <div>
+                                <h3 class="font-tech text-xl font-bold text-white editable">R&D Mechanical Engineer</h3>
+                                <p class="text-sky-400 text-sm font-medium editable">Vanguard Mechatronics Lab</p>
+                            </div>
+                            <span class="bg-slate-800 text-slate-300 text-xs font-mono px-3 py-1 rounded-full editable">2019 - 2022</span>
+                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed editable">
+                            Designed high-speed automated assembly pick-and-place mechanisms. Engineered custom end-effectors, fluidic manifolds, and pneumatic drive systems. Reduced product development cycle time by 25%.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item relative pl-8 group">
+                    <button onclick="deleteElement(this)" class="edit-only absolute top-0 right-0 bg-rose-600/80 text-white text-xs px-2 py-0.5 rounded">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <!-- Timeline Dot -->
+                    <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 border-4 border-slate-950"></div>
+                    
+                    <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="flex flex-wrap justify-between items-start gap-2">
+                            <div>
+                                <h3 class="font-tech text-xl font-bold text-white editable">B.S. in Mechanical Engineering</h3>
+                                <p class="text-emerald-400 text-sm font-medium editable">MIT / Institute of Technology</p>
+                            </div>
+                            <span class="bg-slate-800 text-slate-300 text-xs font-mono px-3 py-1 rounded-full editable">Graduated 2019</span>
+                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed editable">
+                            Graduated Magna Cum Laude. Specialization in Solid Mechanics, Continuum Physics, and Computational Fluid Dynamics. Lead Engineer for Senior Formula SAE Racing Chassis Team.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="grid md:grid-cols-12 gap-8 scroll-mt-24">
+            
+            <div class="md:col-span-5 glass-card p-8 rounded-2xl border border-slate-800 space-y-6">
+                <div>
+                    <h2 class="font-tech text-3xl font-bold text-white uppercase">Let's Connect</h2>
+                    <p class="text-slate-400 text-sm mt-1">Interested in consulting, mechanical CAD design, or full-time roles? Reach out!</p>
+                </div>
+
+                <div class="space-y-4 text-sm font-mono">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-brand-accent">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[10px]">EMAIL ADDRESS</span>
+                            <span class="editable text-slate-200" id="contact-email">a.vance.eng@example.com</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-brand-500">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[10px]">PHONE</span>
+                            <span class="editable text-slate-200" id="contact-phone">+1 (555) 019-2834</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[10px]">LOCATION</span>
+                            <span class="editable text-slate-200" id="contact-location">Boston, MA / Remote</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Platform Links -->
+                <div class="pt-4 border-t border-slate-800 flex gap-3">
+                    <a href="https://linkedin.com" target="_blank" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-center text-slate-300 text-xs font-mono transition">
+                        <i class="fa-brands fa-linkedin mr-1 text-sky-400"></i> LinkedIn
+                    </a>
+                    <a href="https://grabcad.com" target="_blank" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-center text-slate-300 text-xs font-mono transition">
+                        <i class="fa-solid fa-cube mr-1 text-brand-accent"></i> GrabCAD
+                    </a>
+                    <a href="https://github.com" target="_blank" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-center text-slate-300 text-xs font-mono transition">
+                        <i class="fa-brands fa-github mr-1"></i> GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="md:col-span-7 glass-card p-8 rounded-2xl border border-slate-800 space-y-4">
+                <h3 class="font-tech text-xl font-bold text-white">Send Engineering Inquiry</h3>
+                
+                <form onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">Your Name</label>
+                            <input type="text" required placeholder="John Doe" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">Your Email</label>
+                            <input type="email" required placeholder="john@company.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-accent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1">Subject / Project Scope</label>
+                        <input type="text" required placeholder="CAD Design / FEA Consultation" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-accent">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1">Message Detail</label>
+                        <textarea rows="4" required placeholder="Specify CAD specs, material constraints, thermal specs or timeframe..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-accent"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-brand-accent hover:bg-brand-accentHover text-white font-semibold rounded-xl transition shadow-lg shadow-brand-accent/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer with Secret Discreet Admin Key Toggle -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-8 text-center text-xs text-slate-500 font-mono">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                © <span id="year"></span> Mechanical Portfolio
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <span>Designed for Engineers & Designers</span>
+                <!-- Secret Discreet Footer Auth Trigger -->
+                <button onclick="openAuthModal()" class="text-slate-600 hover:text-slate-400 transition" title="Owner Login Access">
+                    <i class="fa-solid fa-key"></i>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Authentication Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 rounded-2xl max-w-sm w-full border border-slate-700 p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2 text-brand-accent font-tech font-bold text-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Owner PIN Security</span>
+                </div>
+                <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-400 leading-relaxed">
+                Enter your security PIN code to unlock website edit controls. (Default PIN: <code class="bg-slate-800 px-1 py-0.5 rounded text-brand-accent">1234</code>)
+            </p>
+
+            <form onsubmit="verifyPasscode(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="auth-passcode" required placeholder="Enter Secret PIN" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-lg tracking-widest font-mono text-white focus:outline-none focus:border-brand-accent">
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeAuthModal()" class="flex-1 py-2 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="flex-1 py-2 bg-brand-accent hover:bg-brand-accentHover text-white text-xs font-semibold rounded-xl shadow-lg">Authenticate</button>
+                </div>
+            </form>
+            
+            <div class="text-[10px] text-slate-500 text-center pt-2 border-t border-slate-800">
+                Or append <span class="font-mono text-slate-400">?edit=1</span> or <span class="font-mono text-slate-400">?admin=true</span> to URL
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed CAD / FEA Breakdown Project Modal -->
+    <div id="project-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 rounded-2xl max-w-2xl w-full border border-slate-700 shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-800 flex justify-between items-start">
+                <div>
+                    <span class="text-xs font-mono text-brand-accent uppercase">Detailed Engineering Breakdown</span>
+                    <h3 id="modal-title" class="font-tech text-2xl font-bold text-white">Project Title</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div>
+                    <h4 class="text-xs font-mono text-slate-400 uppercase mb-1">Analytical Methodology & FEA Highlight</h4>
+                    <p id="modal-desc" class="text-slate-300 text-sm leading-relaxed"></p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs">
+                    <span class="text-brand-accent font-bold block mb-1">TECHNICAL SPECIFICATIONS & MATERIALS:</span>
+                    <p id="modal-specs" class="text-slate-400 leading-normal"></p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-950/50 border-t border-slate-800 flex justify-end">
+                <button onclick="closeModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Set dynamic current year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Security Passcode Settings (Default: "1234")
+        const DEFAULT_PASSCODE = "1234";
+        let isAuthenticated = false;
+        let editModeActive = false;
+
+        // -------------------------------------------------------------
+        // AUTHENTICATION & SECURITY ACCESS SYSTEM
+        // -------------------------------------------------------------
+
+        // Check Access on Page Startup (URL query param or cached session)
+        function checkAccessOnLoad() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const adminQuery = urlParams.get('admin') || urlParams.get('edit') || urlParams.get('key');
+            
+            // Check session storage cache
+            const sessionAuth = sessionStorage.getItem('mech_portfolio_auth');
+
+            if (adminQuery === 'true' || adminQuery === '1' || sessionAuth === 'authenticated') {
+                grantAdminAccess(false);
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('auth-passcode').focus();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('auth-passcode').value = '';
+        }
+
+        function verifyPasscode(e) {
+            e.preventDefault();
+            const inputPIN = document.getElementById('auth-passcode').value;
+
+            if (inputPIN === DEFAULT_PASSCODE) {
+                closeAuthModal();
+                grantAdminAccess(true);
+            } else {
+                showToast('Authentication Failed', 'Incorrect security PIN. Please try again.');
+            }
+        }
+
+        function grantAdminAccess(showNotification = true) {
+            isAuthenticated = true;
+            sessionStorage.setItem('mech_portfolio_auth', 'authenticated');
+
+            // Show admin toolbar & hide login button
+            document.getElementById('admin-controls').classList.remove('hidden');
+            document.getElementById('admin-controls').classList.add('flex');
+            document.getElementById('admin-login-btn').classList.add('hidden');
+
+            if (showNotification) {
+                showToast('Authenticated as Owner', 'Owner controls unlocked. Enable Edit Mode to modify content.');
+            }
+        }
+
+        function lockAdminSession() {
+            isAuthenticated = false;
+            editModeActive = false;
+            toggleEditMode(false);
+            sessionStorage.removeItem('mech_portfolio_auth');
+
+            // Hide admin toolbar & show login button
+            document.getElementById('admin-controls').classList.add('hidden');
+            document.getElementById('admin-controls').classList.remove('flex');
+            document.getElementById('admin-login-btn').classList.remove('hidden');
+
+            showToast('Locked Session', 'Edit Mode locked. General visitors see read-only view.');
+        }
+
+        // -------------------------------------------------------------
+        // VISUAL EDITING & CMS LOCALSTORAGE SYSTEM
+        // -------------------------------------------------------------
+        
+        function toggleEditMode(enabled) {
+            if (!isAuthenticated) return;
+
+            editModeActive = enabled;
+            document.getElementById('edit-mode-toggle').checked = enabled;
+            const body = document.body;
+            const editables = document.querySelectorAll('.editable');
+
+            if (enabled) {
+                body.classList.add('edit-mode');
+                editables.forEach(el => {
+                    el.setAttribute('contenteditable', 'true');
+                });
+                showToast('Edit Mode Enabled', 'Click on highlighted text fields to edit inline.');
+            } else {
+                body.classList.remove('edit-mode');
+                editables.forEach(el => {
+                    el.removeAttribute('contenteditable');
+                });
+                showToast('Edit Mode Disabled', 'Visual outline indicators hidden.');
+            }
+        }
+
+        // Collect current page data as an object
+        function getPageDataJSON() {
+            const dataToSave = {};
+
+            // Save individual static text elements with IDs
+            document.querySelectorAll('.editable[id]').forEach(el => {
+                dataToSave[el.id] = el.innerHTML;
+            });
+
+            // Save dynamic containers HTML markup
+            dataToSave['skills-container-html'] = document.getElementById('skills-container').innerHTML;
+            dataToSave['projects-grid-html'] = document.getElementById('projects-grid').innerHTML;
+            dataToSave['timeline-container-html'] = document.getElementById('timeline-container').innerHTML;
+
+            return dataToSave;
+        }
+
+        // Save All Page Modifications to localStorage
+        function saveAllChanges() {
+            const dataToSave = getPageDataJSON();
+            localStorage.setItem('mech_portfolio_cms_data', JSON.stringify(dataToSave));
+            showToast('Changes Saved!', 'All text, cards, and dynamic updates stored in local storage.');
+        }
+
+        // Load Persisted Data on Startup
+        function loadSavedChanges() {
+            const saved = localStorage.getItem('mech_portfolio_cms_data');
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+                applyDataToPage(data);
+            } catch (e) {
+                console.error('Failed restoring saved dynamic portfolio state:', e);
+            }
+        }
+
+        function applyDataToPage(data) {
+            if (data['skills-container-html']) document.getElementById('skills-container').innerHTML = data['skills-container-html'];
+            if (data['projects-grid-html']) document.getElementById('projects-grid').innerHTML = data['projects-grid-html'];
+            if (data['timeline-container-html']) document.getElementById('timeline-container').innerHTML = data['timeline-container-html'];
+
+            Object.keys(data).forEach(id => {
+                if (!id.endsWith('-html')) {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = data[id];
+                }
+            });
+        }
+
+        // Export Backup JSON Data File
+        function exportJSON() {
+            const data = getPageDataJSON();
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "mechanical_portfolio_backup.json";
+            link.click();
+            URL.revokeObjectURL(url);
+
+            showToast('Export Complete', 'JSON configuration backup file downloaded.');
+        }
+
+        // Import Backup JSON Data File
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    applyDataToPage(importedData);
+                    saveAllChanges();
+                    showToast('Import Successful', 'New portfolio content loaded & saved.');
+                } catch (err) {
+                    showToast('Import Error', 'Invalid JSON file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Delete Dynamic Card Component
+        function deleteElement(btn) {
+            const parentCard = btn.closest('.skill-category-card, .project-card, .timeline-item');
+            if (parentCard) {
+                parentCard.remove();
+                showToast('Card Removed', 'Card element deleted. Click Save to keep changes.');
+            }
+        }
+
+        // Add Dynamic Skill Category
+        function addSkillCategory() {
+            const container = document.getElementById('skills-container');
+            const newCard = document.createElement('div');
+            newCard.className = 'skill-category-card glass-card p-5 rounded-xl border border-slate-800 space-y-4 relative group';
+            newCard.innerHTML = `
+                <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 text-rose-500 hover:text-rose-400 text-xs p-1">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <h3 class="font-tech font-bold text-brand-accent text-lg editable" ${editModeActive ? 'contenteditable="true"' : ''}>New Skill Domain</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="editable text-slate-300" ${editModeActive ? 'contenteditable="true"' : ''}>Engineering Skill 1</span>
+                            <span class="font-mono text-brand-accent editable" ${editModeActive ? 'contenteditable="true"' : ''}>85%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-brand-accent h-full rounded-full" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newCard);
+            showToast('New Skill Card Created', 'Edit title and competencies directly.');
+        }
+
+        // Add Dynamic Project Card
+        function addProjectCard() {
+            const container = document.getElementById('projects-grid');
+            const newProject = document.createElement('div');
+            newProject.className = 'project-card glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between relative group';
+            newProject.innerHTML = `
+                <button onclick="deleteElement(this)" class="edit-only absolute top-3 right-3 z-20 bg-rose-600/90 text-white hover:bg-rose-600 text-xs px-2 py-1 rounded">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </button>
+                <div>
+                    <div class="h-48 bg-slate-900 border-b border-slate-800 relative flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-microchip text-5xl text-slate-700"></i>
+                        <div class="absolute top-3 left-3 flex gap-1.5">
+                            <span class="bg-brand-500/20 text-brand-400 border border-brand-500/30 text-[10px] font-mono px-2 py-0.5 rounded uppercase editable" ${editModeActive ? 'contenteditable="true"' : ''}>CAD/FEA</span>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <h3 class="font-tech text-xl font-bold text-white editable" ${editModeActive ? 'contenteditable="true"' : ''}>New Engineering Project</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed editable" ${editModeActive ? 'contenteditable="true"' : ''}>
+                            Describe the mechanical engineering problem statement, CAD design approach, FEA analysis, and physical prototype results.
+                        </p>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-mono py-2 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="text-slate-500 block">Metric 1:</span>
+                                <span class="text-emerald-400 font-bold editable" ${editModeActive ? 'contenteditable="true"' : ''}>Result Value</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500 block">Metric 2:</span>
+                                <span class="text-brand-accent font-bold editable" ${editModeActive ? 'contenteditable="true"' : ''}>Result Value</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 pt-0">
+                    <button onclick="openProjectModal('New Project Specs', 'Detailed CAD/FEA dynamic summary.', 'Material: Standard Alloy | Weight: Custom')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-layer-group"></i> View CAD & Specs
+                    </button>
+                </div>
+            `;
+            container.appendChild(newProject);
+            showToast('Project Added', 'Configure specs and content using inline edit.');
+        }
+
+        // Add Dynamic Timeline Experience Card
+        function addExperienceCard() {
+            const container = document.getElementById('timeline-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'timeline-item relative pl-8 group';
+            newItem.innerHTML = `
+                <button onclick="deleteElement(this)" class="edit-only absolute top-0 right-0 bg-rose-600/80 text-white text-xs px-2 py-0.5 rounded">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-brand-accent border-4 border-slate-950"></div>
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="flex flex-wrap justify-between items-start gap-2">
+                        <div>
+                            <h3 class="font-tech text-xl font-bold text-white editable" ${editModeActive ? 'contenteditable="true"' : ''}>New Position Title</h3>
+                            <p class="text-brand-accent text-sm font-medium editable" ${editModeActive ? 'contenteditable="true"' : ''}>Company / Institution</p>
+                        </div>
+                        <span class="bg-slate-800 text-slate-300 text-xs font-mono px-3 py-1 rounded-full editable" ${editModeActive ? 'contenteditable="true"' : ''}>2023 - Present</span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed editable" ${editModeActive ? 'contenteditable="true"' : ''}>
+                        Detail your key mechanical design engineering responsibilities, software tools utilized, and major achievements.
+                    </p>
+                </div>
+            `;
+            container.appendChild(newItem);
+            showToast('Experience Item Added', 'Fill in experience details.');
+        }
+
+        // -------------------------------------------------------------
+        // INTERACTIVE MECHANICAL BEAM CALCULATOR
+        // -------------------------------------------------------------
+        function calculateBeam() {
+            // Inputs
+            const F = parseFloat(document.getElementById('calc-force').value); // N
+            const L = parseFloat(document.getElementById('calc-length').value); // m
+            const E_GPa = parseFloat(document.getElementById('calc-material').value); // GPa
+            const E = E_GPa * 1e9; // Pa
+            const b = parseFloat(document.getElementById('calc-width').value) / 1000; // m
+            const h = parseFloat(document.getElementById('calc-height').value) / 1000; // m
+
+            // Update UI Slider Label Texts
+            document.getElementById('calc-force-val').textContent = F + ' N';
+            document.getElementById('calc-length-val').textContent = L + ' m';
+
+            // Moment of Inertia I = (b * h^3) / 12
+            const I = (b * Math.pow(h, 3)) / 12; // m^4
+            const I_cm4 = I * 1e8; // cm^4
+
+            // Max Bending Moment M = F * L
+            const M = F * L; // N*m
+
+            // Max Stress sigma = (M * (h/2)) / I
+            const stress_Pa = (M * (h / 2)) / I;
+            const stress_MPa = stress_Pa / 1e6; // MPa
+
+            // Max Deflection delta = (F * L^3) / (3 * E * I)
+            const deflection_m = (F * Math.pow(L, 3)) / (3 * E * I);
+            const deflection_mm = deflection_m * 1000; // mm
+
+            // Display Results
+            document.getElementById('res-stress').textContent = stress_MPa.toFixed(1) + ' MPa';
+            document.getElementById('res-deflection').textContent = deflection_mm.toFixed(2) + ' mm';
+            document.getElementById('res-inertia').textContent = I_cm4.toFixed(1) + ' cm⁴';
+
+            // Animate SVG Visualizer Beam Deflection Curve
+            const svgBeam = document.getElementById('svg-beam-path');
+            const maxVisualDeflection = Math.min(Math.max(deflection_mm * 2, 5), 35); // Clamp visual curve
+            
+            // Draw Curved Deflection Path
+            svgBeam.setAttribute('d', `M 0,50 Q 150,50 300,${50 + maxVisualDeflection}`);
+            
+            // Reposition Force Arrow
+            const arrow = document.getElementById('calc-force-arrow');
+            arrow.style.transform = `translateY(${maxVisualDeflection}px)`;
+        }
+
+        // -------------------------------------------------------------
+        // UTILITIES & MODAL CONTROLS
+        // -------------------------------------------------------------
+        function openProjectModal(title, description, specs) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = description;
+            document.getElementById('modal-specs').textContent = specs;
+            
+            const modal = document.getElementById('project-modal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('project-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showToast(title, msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-msg').textContent = msg;
+
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            showToast('Inquiry Sent!', 'Thank you. Your message was successfully recorded.');
+            e.target.reset();
+        }
+
+        function downloadResume(e) {
+            e.preventDefault();
+            showToast('Download Triggered', 'Preparing mechanical engineering resume PDF...');
+        }
+
+        // Initialize on DOM load
+        window.onload = function() {
+            loadSavedChanges();
+            checkAccessOnLoad();
+            calculateBeam();
+        };
+    </script>
+</body>
+</html>
