@@ -93,7 +93,6 @@
             opacity: 1;
         }
 
-        /* Modal Smooth Scroll */
         .modal-open {
             overflow: hidden;
         }
@@ -114,7 +113,6 @@
     <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-800 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Logo / Brand Title -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-accent to-brand-500 flex items-center justify-center shadow-lg shadow-brand-accent/20">
                     <i class="fa-solid fa-gear text-slate-900 text-xl animate-spin-slow"></i>
@@ -127,65 +125,14 @@
                 </div>
             </div>
 
-            <!-- Navigation Links -->
             <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
                 <a href="#about" class="text-slate-300 hover:text-brand-accent transition-colors">About</a>
                 <a href="#skills" class="text-slate-300 hover:text-brand-accent transition-colors">Skills</a>
                 <a href="#projects" class="text-slate-300 hover:text-brand-accent transition-colors">Projects</a>
-                <a href="#calculator" class="text-slate-300 hover:text-brand-accent transition-colors">FEA Calculator</a>
+                <a href="#calculator" class="text-slate-300 hover:text-brand-accent transition-colors">Calculators</a>
                 <a href="#experience" class="text-slate-300 hover:text-brand-accent transition-colors">Experience</a>
                 <a href="#contact" class="text-slate-300 hover:text-brand-accent transition-colors">Contact</a>
             </nav>
 
-            <!-- Admin & CMS Toolbar Area -->
             <div class="flex items-center gap-3">
-                
-                <!-- Unlocked Admin Controls -->
-                <div id="admin-controls" class="hidden items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-brand-accent/40 shadow-lg">
-                    
-                    <!-- Toggle Edit Mode Checkbox -->
-                    <label class="flex items-center cursor-pointer px-2 py-1 hover:bg-slate-800 rounded-lg transition">
-                        <input type="checkbox" id="edit-mode-toggle" class="sr-only peer" onchange="toggleEditMode(this.checked)">
-                        <div class="w-8 h-4 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[8px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand-accent"></div>
-                        <span class="text-xs font-mono ml-2 text-brand-accent font-bold">Edit Mode</span>
-                    </label>
-
-                    <!-- Save Changes Button -->
-                    <button onclick="saveAllChanges()" class="edit-only bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Save</span>
-                    </button>
-
-                    <!-- Export Backup JSON -->
-                    <button onclick="exportJSON()" class="edit-only bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-2 py-1.5 rounded-lg border border-slate-700 transition" title="Export Backup JSON">
-                        <i class="fa-solid fa-download"></i>
-                    </button>
-
-                    <!-- Import JSON -->
-                    <input type="file" id="import-json-file" class="hidden" accept=".json" onchange="importJSON(event)">
-                    <button onclick="document.getElementById('import-json-file').click()" class="edit-only bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-2 py-1.5 rounded-lg border border-slate-700 transition" title="Import JSON Data">
-                        <i class="fa-solid fa-upload"></i>
-                    </button>
-
-                    <!-- Lock Admin Mode Button -->
-                    <button onclick="lockAdminSession()" class="bg-rose-600/80 hover:bg-rose-600 text-white text-xs px-2.5 py-1.5 rounded-lg transition flex items-center gap-1" title="Lock & Hide Admin Mode">
-                        <i class="fa-solid fa-lock"></i>
-                        <span class="hidden sm:inline">Lock</span>
-                    </button>
-                </div>
-
-                <!-- Admin Login Button -->
-                <button id="admin-login-btn" onclick="openAuthModal()" class="text-slate-400 hover:text-brand-accent p-2 text-sm transition flex items-center gap-1.5 bg-slate-900/60 rounded-lg border border-slate-800" title="Admin Auth Access">
-                    <i class="fa-solid fa-lock text-xs"></i>
-                    <span class="text-xs font-mono hidden sm:inline">Owner Login</span>
-                </button>
-
-                <!-- Mobile Menu Button -->
-                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-300 hover:text-white p-2">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Dropdown Menu -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-slate
+                <div id="admin-controls" class="hidden items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-brand-accent/4
